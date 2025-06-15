@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title || "User Page" %></title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+<body>
+ <% if (title!=="Login"&&title!=="SignUp"&&title!=="Otp Page") {%>
+    <%- include('../user/partials/header') %>
+  <% } %>
+  <main>
+    <%- body %>
+  </main>
+
+</body>
+</html>
