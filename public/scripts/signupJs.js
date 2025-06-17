@@ -51,7 +51,17 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
           if (errorDiv) errorDiv.innerText = err.message;
         });
       } else {
-        window.location.href = "/sign-up/otp"; // redirect or show success
+        if(data.success){
+            showToast(data.message, "success");
+             setTimeout(()=>{
+            window.location.href = "/sign-up/otp";
+            },3000) // redirect or show success
+        }else{
+            showToast(data.message,"error");
+        }
+        // showToast(`we have sent an OTP to ${email}, please verify that !`, "success");
+        
+       
       }
     })
     .catch((err) => {

@@ -96,6 +96,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '/images/default-user.png', // Put a default profile pic in your public folder
   },
+  refreshToken: {
+    type:String
+  },
 
 }, { timestamps: true });
 
