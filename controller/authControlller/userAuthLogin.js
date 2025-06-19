@@ -28,7 +28,7 @@ const userAuth={
 
             const {fullname,email,phone,password}=req.body
 
-            const exisitingUser=userSchema.findOne({email})
+            const exisitingUser=await userSchema.findOne({email})
 
             if(exisitingUser)return res.status(STATUS.CONFLICT).json({message:` You have already an account using ${email}, Please login !`})
             
