@@ -6,24 +6,30 @@
             <div class="mb-4 text-center">
               <h3 class="fw-bold">Email Verification</h3>
               <p class="text-muted">We have sent an OTP to your email <strong><%= email %></strong></p>
-              <p class="text-muted">Please enter the OTP below</p>
+              <p class="text-muted">Please enter the 6 digit OTP below</p>
             </div>
 
             <form id="otpForm" method="POST">
               <div class="mb-3">
                 <input type="text" class="form-control" name="otp" id="otp" placeholder="Enter OTP" required />
-                <div id="otpError" class="error-message"></div>
+                <div id="otpError" style="color: red;" class="error-message"></div>
               </div>
               <button type="submit" class="btn btn-primary w-100">Verify OTP</button>
             </form>
 
-            <div class="text-center mt-4">
-              <span id="timerText" class="text-muted">Resend available in <span id="countdown" class="timer">60</span>s</span>
-              <button id="resendBtn" class="btn btn-link text-primary d-none">Resend OTP</button>
-            </div>
+           <div class="text-center mt-4">
+  <span id="timerText" class="text-muted">
+    Resend available in <span id="countdown">60</span>s
+  </span>
+  <button id="resendBtn" class="btn btn-link text-primary d-none">Resend OTP</button>
+</div>
+
           </div>
         </div>
       </div>
     </div>
   </section>
   <script src="/scripts/otpSignup.js"></script>
+  <script>
+  window.OTP_EXPIRY = '<%= otpExpiry %>'; // pass from backend
+</script>

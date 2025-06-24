@@ -1,8 +1,14 @@
+
 const express=require("express")
 const app=express()
 const dotenv=require("dotenv")
 const expressLayouts = require('express-ejs-layouts');
 dotenv.config()
+const agenda=require("./config/agenda");
+require("./services/emailOtp");
+(async function () {
+  await agenda.start();
+})();
 const path=require("path")
 const cookieParser = require('cookie-parser'); 
 const adminRoutes=require("./routes/adminRoutes")

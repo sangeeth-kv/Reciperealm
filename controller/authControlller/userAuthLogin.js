@@ -6,30 +6,31 @@ const {signToken,verifyToken}=require("../../helpers/otpJwt")
 const argon2=require("argon2")
 const {generateOtp}=require("../../services/otpService")
 const tempSave=require("../../helpers/tempUserSave")
+const {registerVerifyOtp}=require("../../helpers/registerVerifyOtp")
+const agenda=require("../../config/agenda")
 
 
 const userAuth={
     loadLogin:async (req,res) => {
         try {
             console.log("load login triggered")
+
             res.render("user/auth/login",{layout:"layouts/userLayout",title:"Login"})
+
         } catch (error) {
             console.log(error)
         }
     },
     loadSignup:async (req,res) => {
        try {
-            console.log("load signup triggered")
             res.render("user/auth/signup",{layout:"layouts/userLayout",title:"SignUp"})
        } catch (error) {
-        
+            console.log(error)
        } 
     },
     verifySignUp:async (req,res) => {
         try {
             console.log("verify signup triggered")
-
-            console.log("Req body : ",req.body)
 
             const {fullname,email,phone,password}=req.body
 
@@ -39,13 +40,16 @@ const userAuth={
             
             await tempUserSchema.deleteOne({email})
 
-            const token=signToken({email})
 
             const hashedPassword=await argon2.hash(password)   
             
             const otp=generateOtp()
 
-            const otpExpiry = new Date(Date.now() + 1 * 60 * 1000);
+            console.log("Otp generated from registration : ",otp)
+
+            const otpExpiry = new Date(Date.now() + (parseInt(process.env.OTP_EXPIRY_MINUTES) || 1) * 60 * 1000);
+
+            const token=signToken({email,otpExpiry,fullname})
 
             await tempSave({
               email,
@@ -56,10 +60,18 @@ const userAuth={
               otp,
             });
 
-            res.cookie('OtpEmailToken', token, {
+            console.log("temp user saves")
+
+            await agenda.now("send-otp-email", {
+              email,
+              otp,
+              fullname,
+            });
+
+
+            res.cookie('otpEmailToken', token, {
                 httpOnly: true,  // Cookie is not accessible via JavaScript (protection against XSS)
                 secure: process.env.NODE_ENV === 'production', // Only sent in HTTPS in production
-                maxAge: 3600000, // Cookie expires in 1 hour
             });
 
             res.status(STATUS.CREATED).json({
@@ -77,7 +89,16 @@ const userAuth={
     },loadOtpPage:async (req,res) => {
         try {
             console.log("load otp page triggered ")
-            res.render("user/auth/otpPage",{layout:"layouts/userLayout",title:"Otp Page",email:"hi"})
+
+            let token=req.cookies.otpEmailToken
+
+            let otpVerify=verifyToken(token)
+
+            console.log("Token verify :",otpVerify)
+
+            if (!otpVerify) return res.redirect("/signup");
+
+            res.render("user/auth/otpPage",{layout:"layouts/userLayout",title:"Otp Page",email:otpVerify.email,otpExpiry:otpVerify.otpExpiry})
         } catch (error) {
             console.error(error)
         }

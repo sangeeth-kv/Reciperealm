@@ -1,6 +1,7 @@
 document.getElementById("signupForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
+
   document.querySelectorAll(".error-message").forEach((el) => (el.innerText = ""));
   let valid = true;
 
@@ -37,6 +38,8 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
 
   if (!valid) return;
 
+  document.getElementById("submitBtn").disabled=true
+
   fetch("/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -45,6 +48,7 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
     .then((res) => res.json())
     .then((data) => {
       if (!data.success && data.errors) {
+        document.getElementById("submitBtn").disabled=false
         data.errors.forEach((err) => {
             console.log(err)
           const errorDiv = document.getElementById(`${err.field}Error`);
