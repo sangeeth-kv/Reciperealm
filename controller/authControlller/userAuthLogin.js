@@ -36,7 +36,7 @@ const userAuth={
 
             const exisitingUser=await userSchema.findOne({email})
 
-            if(exisitingUser)return res.status(STATUS.CONFLICT).json({message:` You have already an account using ${email}, Please login !`})
+            if(exisitingUser)return res.status(STATUS.CONFLICT).json({message:` You have already an account using ${email}, Please login !`,redirectUrl:"/login"})
             
             await tempUserSchema.deleteOne({email})
 

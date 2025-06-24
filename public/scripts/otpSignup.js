@@ -83,8 +83,8 @@ const initialExpiry = new Date(window.OTP_EXPIRY).getTime();
           otpError.innerText = data.message || "Invalid OTP";
         } else {
           clearInterval(timerInterval);
-          alert("OTP Verified Successfully");
-          window.location.href = "/dashboard";
+          alert(data.message);
+          window.location.href = data.redirectUrl;
         }
       })
       .catch((error) => {

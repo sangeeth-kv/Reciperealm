@@ -14,6 +14,6 @@ router.get("/signup",userAuth.loadSignup)
 router.post("/signup",signupValidation,validate,userAuth.verifySignUp)
 router.get("/sign-up/otp",userAuth.loadOtpPage)
 
-router.post("/verify-otp",otpController.verifyOtp)
+router.post("/verify-otp",otpController.verifyOtpSignup)
 router.post("/resend-otp",otpResendLimiter,otpController.resendOtp)
 module.exports=router
