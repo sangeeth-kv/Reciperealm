@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <title><%= title || "User Page" %></title>
   <link rel="stylesheet" href="/assets/css/main.css">
+  <!-- Toastify CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<!-- Toastify JS -->
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
 </head>
 <body>
  <% if (title!=="Login"&&title!=="SignUp"&&title!=="Otp Page") {%>
@@ -14,4 +19,5 @@
   </main>
 
 </body>
+<script src="/scripts/toast.js"></script>
 </html>

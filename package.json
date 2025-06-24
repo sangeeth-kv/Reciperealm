@@ -11,14 +11,21 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "agenda": "^5.0.0",
+    "argon2": "^0.43.0",
+    "bull": "^4.16.5",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.5.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-ejs-layouts": "^2.5.1",
+    "express-rate-limit": "^7.5.1",
     "express-validator": "^7.2.1",
+    "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.2",
-    "nodemon": "^3.1.10"
+    "nodemailer": "^7.0.3",
+    "nodemon": "^3.1.10",
+    "redis": "^5.5.6"
   }
 }

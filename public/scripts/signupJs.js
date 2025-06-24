@@ -1,6 +1,7 @@
 document.getElementById("signupForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
+
   document.querySelectorAll(".error-message").forEach((el) => (el.innerText = ""));
   let valid = true;
 
@@ -37,6 +38,8 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
 
   if (!valid) return;
 
+  document.getElementById("submitBtn").disabled=true
+
   fetch("/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -45,13 +48,24 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
     .then((res) => res.json())
     .then((data) => {
       if (!data.success && data.errors) {
+        document.getElementById("submitBtn").disabled=false
         data.errors.forEach((err) => {
             console.log(err)
           const errorDiv = document.getElementById(`${err.field}Error`);
           if (errorDiv) errorDiv.innerText = err.message;
         });
       } else {
-        window.location.href = "/sign-up/otp"; // redirect or show success
+        if(data.success){
+            showToast(data.message, "success");
+             setTimeout(()=>{
+            window.location.href = "/sign-up/otp";
+            },3000) // redirect or show success
+        }else{
+            showToast(data.message,"error");
+        }
+        // showToast(`we have sent an OTP to ${email}, please verify that !`, "success");
+        
+       
       }
     })
     .catch((err) => {

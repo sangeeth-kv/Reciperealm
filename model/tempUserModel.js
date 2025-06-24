@@ -1,6 +1,7 @@
 // models/tempUserModel.js
 
 const mongoose = require("mongoose");
+const { type } = require("os");
 
 const tempUserSchema = new mongoose.Schema({
     fullname: { type: String,},
@@ -10,6 +11,7 @@ const tempUserSchema = new mongoose.Schema({
         lowercase: true, // Always store emails lowercase
         // Ensure no duplicate temp signup per email
     },
+    phone:{type:Number},
     password: { type: String, }, // Hashed password
     otp: { type: String,  },
     otpExpiry: { type: Date, required: true }, // Field to store OTP expiry time

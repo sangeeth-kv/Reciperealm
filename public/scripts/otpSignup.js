@@ -1,68 +1,95 @@
-const resendBtn = document.getElementById("resendBtn");
-    const countdown = document.getElementById("countdown");
-    const timerText = document.getElementById("timerText");
-    const otpForm = document.getElementById("otpForm");
+document.addEventListener("DOMContentLoaded", function () {
+  const resendBtn = document.getElementById("resendBtn");
+  const countdown = document.getElementById("countdown");
+  const timerText = document.getElementById("timerText");
+  const otpForm = document.getElementById("otpForm");
 
-    // Get or initialize start time
-    const key = "otpCountdownStart";
-    let startTime = localStorage.getItem(key);
-    if (!startTime) {
-      startTime = Date.now();
-      localStorage.setItem(key, startTime);
-    }
+  let timerInterval = null;
 
-    function updateTimer() {
+  function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  function startTimerFromExpiry(expiryTimestamp) {
+    if (timerInterval) clearInterval(timerInterval);
+
+    const updateTimer = () => {
       const now = Date.now();
-      const elapsed = Math.floor((now - startTime) / 1000);
-      const remaining = 60 - elapsed;
+      const remaining = Math.floor((expiryTimestamp - now) / 1000);
 
       if (remaining > 0) {
-        countdown.textContent = remaining;
-        resendBtn.classList.add("d-none");
         timerText.classList.remove("d-none");
+        resendBtn.classList.add("d-none");
+        countdown.textContent = formatTime(remaining);
       } else {
+        clearInterval(timerInterval);
         timerText.classList.add("d-none");
         resendBtn.classList.remove("d-none");
-        clearInterval(timerInterval);
       }
+    };
+
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+  }
+
+  // ⏱️ Start with OTP expiry from server
+const initialExpiry = new Date(window.OTP_EXPIRY).getTime();
+
+
+
+  console.log(window.OTP_EXPIRY)
+  startTimerFromExpiry(initialExpiry);
+
+  // 🔁 Resend OTP
+  resendBtn.addEventListener("click", () => {
+    fetch("/resend-otp", { method: "POST" })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data)
+        if (data.success && data.otpExpiry) {
+          window.OTP_EXPIRY = data.otpExpiry;
+          startTimerFromExpiry(data.otpExpiry);
+          location.reload()
+        }
+      })
+      .catch((error) => {
+        console.error("Resend error:", error);
+        alert("Failed to resend OTP");
+      });
+  });
+
+  // ✅ OTP Form Submission
+  otpForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const otp = document.getElementById("otp").value.trim();
+    const otpError = document.getElementById("otpError");
+    otpError.innerText = "";
+
+    if (otp.length !== 6) {
+      return (otpError.innerText = "Please enter a valid 6-digit OTP.");
     }
 
-    const timerInterval = setInterval(updateTimer, 1000);
-    updateTimer();
-
-    resendBtn.addEventListener("click", () => {
-      localStorage.setItem(key, Date.now()); // reset timer
-      resendBtn.classList.add("d-none");
-      timerText.classList.remove("d-none");
-      updateTimer();
-
-      // 👇 You can call your resend OTP backend here
-      fetch("/resend-otp", { method: "POST" })
-        .then(res => res.json())
-        .then(data => alert(data.message || "OTP resent"))
-        .catch(() => alert("Something went wrong"));
-    });
-
-    otpForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      document.getElementById("otpError").innerText = "";
-
-      const otp = document.getElementById("otp").value.trim();
-
-      fetch("/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ otp })
+    fetch("/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ otp }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.success) {
+          otpError.innerText = data.message || "Invalid OTP";
+        } else {
+          clearInterval(timerInterval);
+          alert("OTP Verified Successfully");
+          window.location.href = "/dashboard";
+        }
       })
-        .then(res => res.json())
-        .then(data => {
-          if (!data.success) {
-            document.getElementById("otpError").innerText = data.message || "Invalid OTP";
-          } else {
-            alert("OTP Verified Successfully");
-            localStorage.removeItem(key); // clear timer
-            window.location.href = "/dashboard";
-          }
-        });
-    });
+      .catch((error) => {
+        console.error("Verification error:", error);
+        otpError.innerText = "Network error occurred";
+      });
+  });
+});
