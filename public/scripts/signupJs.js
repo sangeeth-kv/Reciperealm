@@ -65,7 +65,7 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
             if(data.redirectUrl){
               setTimeout(()=>{
                 window.location=data.redirectUrl
-              },1000)
+              },3000)
             }
         }
         // showToast(`we have sent an OTP to ${email}, please verify that !`, "success")

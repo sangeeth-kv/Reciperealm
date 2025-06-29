@@ -39,7 +39,7 @@ const initialExpiry = new Date(window.OTP_EXPIRY).getTime();
 
 
 
-  console.log(window.OTP_EXPIRY)
+  
   startTimerFromExpiry(initialExpiry);
 
   // 🔁 Resend OTP
@@ -72,7 +72,10 @@ const initialExpiry = new Date(window.OTP_EXPIRY).getTime();
       return (otpError.innerText = "Please enter a valid 6-digit OTP.");
     }
 
-    fetch("/verify-otp", {
+    const path=window.location.pathname
+
+    if(path==="/sign-up/otp"){
+        fetch("/verify-signup-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ otp }),
@@ -83,13 +86,38 @@ const initialExpiry = new Date(window.OTP_EXPIRY).getTime();
           otpError.innerText = data.message || "Invalid OTP";
         } else {
           clearInterval(timerInterval);
-          alert(data.message);
-          window.location.href = data.redirectUrl;
+           showToast(data.message,"success");
+          setTimeout(()=>{
+            window.location.href = data.redirectUrl;
+          },2000)
         }
       })
       .catch((error) => {
         console.error("Verification error:", error);
         otpError.innerText = "Network error occurred";
       });
-  });
+    }else{
+       fetch("/verify-forgot-otp",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({otp})
+       })
+       .then((res)=>res.json())
+       .then((data)=>{
+        if(!data.success){
+            otpError.innerText = data.message || "Invalid OTP";
+        }else{
+           clearInterval(timerInterval);
+          showToast(data.message,"success");
+          setTimeout(()=>{
+            window.location.href = data.redirectUrl;
+          },2000)
+        }
+       })
+       .catch((error) => {
+        console.error("Verification error:", error);
+        otpError.innerText = "Network error occurred";
+      });
+    }  
+  })
 });

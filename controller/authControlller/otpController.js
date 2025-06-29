@@ -27,7 +27,7 @@ const otpController={
                     const { email } = verifyToken(token)
                     const saveResult = await saveUser(email);
 
-                    if(!saveResult)res.status(STATUS.BAD_REQUEST).json({message:"An error occured during sign up, please try again."})
+                    if(!saveResult)return res.status(STATUS.BAD_REQUEST).json({message:"An error occured during sign up, please try again."})
 
                     res.clearCookie("otpEmailToken");
 
@@ -65,15 +65,26 @@ const otpController={
 
             const otp=generateOtp()
 
+            console.log("otp in resend otp : ",otp)
+
             const otpExpiry = new Date(Date.now() + (parseInt(process.env.OTP_EXPIRY_MINUTES) || 1) * 60 * 1000);
 
-            await tempUserSchema.updateOne({email:decoded.email},{otp,otpExpiry})
+            console.log("resend otp exp : ",otpExpiry)
+            
 
-            await agenda.now("send-otp-email", {
-                email:decoded.email,
+            await Promise.all([
+                 tempUserSchema.updateOne(
+                { email: decoded.email },
+                { otp, otpExpiry }
+              ),
+
+               agenda.now("send-otp-email", {
+                email: decoded.email,
                 otp,
-                fullname:decoded.fullname || "User", // or pass real name from DB
-            });
+                fullname: decoded.fullname || "User", // or pass real name from DB
+              }),
+            ]);
+            
 
             const newToken=signToken({email:decoded.email,otpExpiry,fullname:decoded.fullname})
 
@@ -86,10 +97,60 @@ const otpController={
         } catch (error) {
             console.log(error)
             return res.status(STATUS.SERVER_ERROR).json({message:"Internal server error, Please try again."})
-        }
-       
+        } 
+    },
+    verifyForgotOtp:async (req,res) => {
+        try{
+            console.log("verify forgoto otp triggered..")
+            console.log("req body of verify forgot otp : ",req.body)
+            const otp=req.body.otp
+            console.log("user otp is here : ",otp)
+            const token=req.cookies.otpEmailToken;
 
-        
+            const validateOtp=await verifyOtp(token,otp)
+
+            console.log("validation result : ",validateOtp)
+
+             switch (validateOtp){
+                case "token_expired":
+                    return res.status(STATUS.BAD_REQUEST).json({ message: "Session expired. Please sign up again." });
+                case "otp_expired":
+                    return res.status(STATUS.BAD_REQUEST).json({ message: "Otp expired. Request for new Otp." });
+                case "invalid_otp":
+                     return res.status(STATUS.BAD_REQUEST).json({ message: "Invalid OTP. Please enter the right one" });
+                case "success":
+
+                const decoded = verifyToken(token);
+
+                console.log("decode  :: :: ", decoded);
+
+                const userEmailToken = signToken({ userEmail: decoded.email });
+
+                res.cookie("forgotEmailToken", userEmailToken, {
+                  httpOnly: true,
+                  secure: process.env.NODE_ENV === "production",
+                  maxAge: 10 * 60 * 1000, 
+                });
+                
+                    res.clearCookie("otpEmailToken");
+
+                    
+                    return res.status(STATUS.OK).json({
+                        success: true,
+                        message: `OTP verification successfully completed.`,
+                        redirectUrl:`/reset-password`,
+
+                    });
+
+                default:
+                    return res.status(500).json({ message: "Unknown error during OTP verification." });
+            }
+
+
+        }catch(error){
+            console.log(error)
+            return res.status(STATUS.SERVER_ERROR).json({message:"Internal server error, Please try again."})
+        }
     }
 }
 

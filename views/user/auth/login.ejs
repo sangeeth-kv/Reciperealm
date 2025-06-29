@@ -11,19 +11,21 @@
                         <p class="text-muted">Please log in to your account</p>
                     </div>
 
-                    <form method="post">
+                    <form id="login-form">
                         <div class="mb-3">
-                            <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+                            <input type="text" id="emailOrPhone" value="" name="emailorphone" class="form-control" placeholder="Please enter your email or phone number" >
+                            <div id="emailorphoneError" class="error-message" style="color: red;"></div>
                         </div>
                         <div class="mb-3">
-                            <input type="password" name="password" class="form-control" placeholder="Password" required>
+                            <input type="password" name="password" class="form-control" placeholder="Password" >
+                            <div id="passwordError" class="error-message" style="color: red;"></div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="rememberMe">
                                 <label for="rememberMe" class="form-check-label">Remember me</label>
                             </div>
-                            <a href="#" class="text-decoration-none small">Forgot password?</a>
+                            <a  id="forgotPasswordLink"class="text-decoration-none small">Forgot password?</a>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
                     </form>
@@ -64,27 +66,6 @@
         </div>
     </div>
 </section>
-
-
-<script src="/assets/js/vendor/modernizr-3.6.0.min.js"></script>
-<script src="/assets/js/vendor/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
-<script src="/assets/js/vendor/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/plugins/slick.js"></script>
-<script src="/assets/js/plugins/jquery.syotimer.min.js"></script>
-<script src="/assets/js/plugins/wow.js"></script>
-<script src="/assets/js/plugins/jquery-ui.js"></script>
-<script src="/assets/js/plugins/perfect-scrollbar.js"></script>
-<script src="/assets/js/plugins/magnific-popup.js"></script>
-<script src="/assets/js/plugins/select2.min.js"></script>
-<script src="/assets/js/plugins/waypoints.js"></script>
-<script src="/assets/js/plugins/counterup.js"></script>
-<script src="/assets/js/plugins/jquery.countdown.min.js"></script>
-<script src="/assets/js/plugins/images-loaded.js"></script>
-<script src="/assets/js/plugins/isotope.js"></script>
-<script src="/assets/js/plugins/scrollup.js"></script>
-<script src="/assets/js/plugins/jquery.vticker-min.js"></script>
-<script src="/assets/js/plugins/jquery.theia.sticky.js"></script>
-<!-- Template  JS -->
-<script src="/assets/js/main.js?v=3.4"></script>
 </body>
+<script src="/scripts/signinjs.js"></script>
+<script src="/scripts/forgotOtp.js"></script>
