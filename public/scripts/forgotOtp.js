@@ -12,7 +12,7 @@ forgetBtn.addEventListener("click",async (e) => {
 
     console.log(emailorphone)
     if(!emailorphone)return emailOrPhoneError.textContent="Must enter a Email or a phone number here."
-    const response=await fetch("/forget-password",{
+    const response=await fetch("/accounts/forget-password",{
         method:"Post",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({emailorphone})
@@ -26,7 +26,7 @@ forgetBtn.addEventListener("click",async (e) => {
     }else{
         showToast(result.message,"success")
         setTimeout(()=>{
-            window.location=result.redirectUrl ||"/login"
+            window.location=result.redirectUrl ||"/accounts/login"
         },3000) 
     }
     console.log("result of response : ",result)

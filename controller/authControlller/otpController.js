@@ -34,7 +34,7 @@ const otpController={
                     return res.status(STATUS.OK).json({
                         success: true,
                         message: `Hey ${saveResult.user} !Signup successfully completed, please login and continue`,
-                        redirectUrl:"/login",
+                        redirectUrl:"/accounts/login",
                         
                     });
 
@@ -138,7 +138,7 @@ const otpController={
                     return res.status(STATUS.OK).json({
                         success: true,
                         message: `OTP verification successfully completed.`,
-                        redirectUrl:`/reset-password`,
+                        redirectUrl:`/accounts/reset-password`,
 
                     });
 

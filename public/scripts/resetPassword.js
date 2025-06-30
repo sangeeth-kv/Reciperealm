@@ -37,7 +37,7 @@ document.getElementById("reset-password-form").addEventListener("submit",(e)=>{
 
    if (!valid) return;
 
-   fetch("/reset-password",{
+   fetch("/accounts/reset-password",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({password,confirmPassword})

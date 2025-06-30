@@ -1,6 +1,20 @@
 // public/scripts/login.js
 
 document.addEventListener("DOMContentLoaded", () => {
+
+
+  const urlParams = new URLSearchParams(window.location.search);
+const error = urlParams.get('error');
+
+if (error === 'user_not_found') {
+  showToast("No account found with your Facebook email","error")
+  setTimeout(()=>{
+    window.location.href="/accounts/login"
+  },2000)
+}
+
+
+
   const form = document.getElementById("login-form");
   const emailOrPhoneInput = document.querySelector("input[name='emailorphone']");
   const passwordInput = document.querySelector("input[name='password']");
@@ -18,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = passwordInput.value.trim();
 
     try {
-      const res = await fetch("/login", {
+      const res = await fetch("/accounts/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

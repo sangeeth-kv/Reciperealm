@@ -40,7 +40,7 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
 
   document.getElementById("submitBtn").disabled=true
 
-  fetch("/signup", {
+  fetch("/accounts/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ fullname, email, phone, password, confirmPassword }),
@@ -58,7 +58,7 @@ document.getElementById("signupForm").addEventListener("submit", function (e) {
         if(data.success){
             showToast(data.message, "success");
              setTimeout(()=>{
-            window.location.href = "/sign-up/otp";
+            window.location.href = "/accounts/sign-up/otp";
             },3000) // redirect or show success
         }else{
             showToast(data.message,"error");

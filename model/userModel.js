@@ -16,8 +16,11 @@ const userSchema = new mongoose.Schema({
 
   phone: {
     type: String,
-    required: true,
+    required: function () {
+      return !this.googleId && !this.facebookId;
+    },
     unique: true,
+      sparse: true, // ✅ This makes the uniqueness apply only when the field is present
     match: /^[0-9]{10}$/
   },
 

@@ -27,6 +27,15 @@ const userAuth={
 
             const existingUser = await userSchema.findOne({$or: [{ email }, { phone }]});
 
+            if(existingUser && (existingUser.googleId||existingUser.facebookId)){
+              const conflictField =existingUser.googleId?"google login":"facebook login"
+              return res.status(STATUS.CONFLICT).json({
+                message: `You have already used this email in ${conflictField}. Please login!`,
+                redirectUrl: "/accounts/login",
+              });
+            }
+
+
             if (existingUser) {
               const conflictField =
                 existingUser.email === email
@@ -35,9 +44,11 @@ const userAuth={
 
               return res.status(STATUS.CONFLICT).json({
                 message: `You already have ${conflictField}. Please login!`,
-                redirectUrl: "/login",
+                redirectUrl: "/accounts/login",
               });
             }
+
+            
             
             await tempUserSchema.deleteOne({email})
 
@@ -93,7 +104,7 @@ const userAuth={
 
             let token=req.cookies.otpEmailToken
 
-            if(!token)return res.redirect("/signup");
+            if(!token)return res.redirect("/accounts/signup");
 
             let otpVerify=verifyToken(token)
 

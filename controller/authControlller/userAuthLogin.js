@@ -51,10 +51,10 @@ const userAuthLogin={
                 httpOnly:true,
                 secure:true,
                 sameSite:"Strict",
-                 maxAge: 15 * 60 * 1000
+                 maxAge:  7 * 24 * 60 * 60 * 1000,
             })
 
-            return res.status(STATUS.OK).json({redirectUrl:"/home",success:true})
+            return res.status(STATUS.OK).json({redirectUrl:"/",success:true})
 
             
         } catch (error) {

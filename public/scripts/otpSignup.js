@@ -44,7 +44,7 @@ const initialExpiry = new Date(window.OTP_EXPIRY).getTime();
 
   // 🔁 Resend OTP
   resendBtn.addEventListener("click", () => {
-    fetch("/resend-otp", { method: "POST" })
+    fetch("/accounts/resend-otp", { method: "POST" })
       .then((res) => res.json())
       .then((data) => {
         console.log(data)
@@ -74,8 +74,8 @@ const initialExpiry = new Date(window.OTP_EXPIRY).getTime();
 
     const path=window.location.pathname
 
-    if(path==="/sign-up/otp"){
-        fetch("/verify-signup-otp", {
+    if(path==="/accounts/sign-up/otp"){
+        fetch("/accounts/verify-signup-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ otp }),
@@ -97,7 +97,7 @@ const initialExpiry = new Date(window.OTP_EXPIRY).getTime();
         otpError.innerText = "Network error occurred";
       });
     }else{
-       fetch("/verify-forgot-otp",{
+       fetch("/accounts/verify-forgot-otp",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({otp})

@@ -65,7 +65,7 @@ const forgotController={
             return res.status(STATUS.CREATED).json({
                 success: true,
                 message: `We have sent an otp to ${user.email}, Please verify !`,
-                redirectUrl:"/forgot/otp"
+                redirectUrl:"/accounts/forgot/otp"
             });
 
         } catch (error) {
@@ -79,7 +79,7 @@ const forgotController={
     loadResetPassword:async (req,res) => {
         try {
             console.log("Req cookies : ",req.cookies)
-            if(!req.cookies.forgotEmailToken)return res.redirect("/login")
+            if(!req.cookies.forgotEmailToken)return res.redirect("/accounts/login")
             res.render("user/auth/resetPassword",{layout:"layouts/userLayout",title:"Reset Password"})
         } catch (error) {
             console.log(error)
@@ -90,24 +90,24 @@ const forgotController={
             console.log("verify reset triggered")
             console.log("req body of verify rest paswrd : ",req.body)
             const token=req.cookies.forgotEmailToken
-            if(!token)return res.status(STATUS.BAD_REQUEST).json({message:"Session timeout, again need to verify OTP",redirectUrl:"/login"})
+            if(!token)return res.status(STATUS.BAD_REQUEST).json({message:"Session timeout, again need to verify OTP",redirectUrl:"/accounts/login"})
             
             let decoded;
             try {
                 decoded = verifyToken(token);
             } catch (error) {
-                if(error.name==="TokenExpiredError")return res.status(STATUS.BAD_REQUEST).json({ message: "Session expired. Please re-verify OTP", redirectUrl: "/login" });
+                if(error.name==="TokenExpiredError")return res.status(STATUS.BAD_REQUEST).json({ message: "Session expired. Please re-verify OTP", redirectUrl: "/accounts/login" });
                 return res.status(STATUS.UNAUTHORIZED).json({ message: "Invalid token." });
             }
             const user=await userSchema.findOne({email:decoded.userEmail})
             console.log("user founds in  : ",user)
-            if(!user)return res.status(STATUS.NOT_FOUND).json({message:"User not found.!",redirectUrl:"/login"})
+            if(!user)return res.status(STATUS.NOT_FOUND).json({message:"User not found.!",redirectUrl:"/accounts/login"})
             const {password}=req.body
             const hashedPassword = await argon2.hash(password)
             user.password = hashedPassword;
             await user.save();
             res.clearCookie("forgotEmailToken");
-            return res.status(STATUS.OK).json({success:true,message:"Password changed Successfully",redirectUrl:"/login"})
+            return res.status(STATUS.OK).json({success:true,message:"Password changed Successfully",redirectUrl:"/accounts/login"})
         } catch (error) {
           console.log(error);
           return res.status(STATUS.SERVER_ERROR).json({

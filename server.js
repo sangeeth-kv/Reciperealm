@@ -12,8 +12,8 @@ require("./services/emailOtp");
 const path=require("path")
 const cookieParser = require('cookie-parser'); 
 const adminRoutes=require("./routes/adminRoutes")
-const userRoutes=require("./routes/userRoutes")
-const authRoutes=require("./routes/authRoutes")
+const userAuthRoutes=require("./routes/userAuthRoutes")
+const authRoutes=require("./routes/otherAuthRoutes")
 const connectDB=require("./config/connectDB")
 
 
@@ -27,8 +27,9 @@ app.use(express.json());
 app.use(cookieParser())
 
 
-app.use("/",userRoutes)
+app.use("/accounts",userAuthRoutes)
 app.use("/admin",adminRoutes)
+// app.use("/",userRoutes)
 app.use("/auth",authRoutes,()=>console.log("triddered"))
 
 
